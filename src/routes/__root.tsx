@@ -18,7 +18,7 @@ export const Route = createRootRoute({
         name: "viewport",
       },
       {
-        title: "Axon 1",
+        title: "CRUD Lite",
       },
     ],
     links: [
