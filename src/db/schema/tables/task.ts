@@ -10,3 +10,6 @@ export const taskTable = sqliteTable("tasks", {
     .default("planned"),
   ...timestamps,
 });
+
+export type SelectedTask = typeof taskTable.$inferSelect;
+export type InsertedTask = typeof taskTable.$inferInsert;
