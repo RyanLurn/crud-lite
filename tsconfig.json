@@ -12,8 +12,9 @@
     // Bundler mode
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
     "noEmit": true,
+    // Disable this option to prevent server bundles leaking into client bundles
+    "verbatimModuleSyntax": false,
 
     // Best practices
     "strict": true,
