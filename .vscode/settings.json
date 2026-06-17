@@ -1,0 +1,33 @@
+{
+  "files.eol": "\n",
+  "files.readonlyInclude": {
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true
+  },
+  "files.watcherExclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "search.exclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.rules.customizations": [{ "rule": "*", "severity": "warn" }],
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "tailwindCSS.classFunctions": [
+    "tw",
+    "clsx",
+    "tw\\.[a-z-]+",
+    "cn",
+    "twMerge",
+    "cva"
+  ]
+}

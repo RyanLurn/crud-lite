@@ -1,0 +1,17 @@
+# Bun lock file
+bun.lock
+
+# Generated files
+routeTree.gen.ts
+
+# Generated directories
+migrations
+_generated
+
+# Notes:
+# By default, Prettier will ignore:
+# - Files in version control systems directories (".git", ".jj", ".sl", ".svn" and ".hg")
+# - node_modules
+# - Files ignored by ".gitignore" file in the same directory
+# So, if the code you want to ignore is already in those categories, you don't need to add them to this file
+# See https://prettier.io/docs/ignore for more information
