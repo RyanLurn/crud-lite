@@ -4,7 +4,6 @@ import { toast } from "sonner";
 
 import {
   createTaskValidator,
-  taskNameValidator,
   createTask,
 } from "@/features/task/operations/create-task";
 import { useAppForm } from "@/lib/form/hook";
@@ -56,12 +55,7 @@ export function NewTaskForm({ className }: { className?: string }) {
       className={cn("flex gap-x-2", className)}
       id={newTaskForm.formId}
     >
-      <newTaskForm.AppField
-        validators={{
-          onChange: taskNameValidator,
-        }}
-        name="name"
-      >
+      <newTaskForm.AppField name="name">
         {(appField) => (
           <appField.TextField
             placeholder="Add a new task"

@@ -7,15 +7,13 @@ import type { InternalServerErrorCode } from "@/types/app-error";
 
 import { insertTask } from "@/db/queries/insert-task.server";
 
-export const taskNameValidator = z
-  .string()
-  .trim()
-  .normalize("NFC")
-  .min(1, "Task name is required.")
-  .max(100, "Task name is too long.");
-
 export const createTaskValidator = z.object({
-  name: taskNameValidator,
+  name: z
+    .string()
+    .trim()
+    .normalize("NFC")
+    .min(1, "Task name is required.")
+    .max(100, "Task name is too long."),
 });
 
 export const createTask = createServerFn({ method: "POST" })
