@@ -32,6 +32,9 @@ export function NewTaskForm({ className }: { className?: string }) {
       >
         {(appField) => <appField.TextField placeholder="Add a new task" />}
       </newTaskForm.AppField>
+      <newTaskForm.AppForm>
+        <newTaskForm.SubmitButton submittingText="Adding..." submitText="Add" />
+      </newTaskForm.AppForm>
     </form>
   );
 }
