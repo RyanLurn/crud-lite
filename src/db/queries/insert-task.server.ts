@@ -1,6 +1,7 @@
 import { SQLiteError } from "bun:sqlite";
 
-import type { UnexpectedErrorCode, SQLiteErrorCode } from "@/types/app-error";
+import type { UnexpectedDatabaseErrorCode } from "@/db/types";
+import type { UnexpectedErrorCode } from "@/types/app-error";
 import type { Result } from "@/types/result";
 
 import {
@@ -12,7 +13,9 @@ import { db } from "@/db";
 
 export async function insertTask(
   newTask: InsertedTask
-): Promise<Result<SelectedTask, UnexpectedErrorCode | SQLiteErrorCode>> {
+): Promise<
+  Result<SelectedTask, UnexpectedDatabaseErrorCode | UnexpectedErrorCode>
+> {
   try {
     const [returnedTask] = await db
       .insert(taskTable)
@@ -26,36 +29,18 @@ export async function insertTask(
       };
     }
 
-    return {
-      success: false,
-      error: {
-        code: "UNEXPECTED_ERROR",
-        message:
-          "insertTask returns an empty result set. This isn't supposed to happen.",
-        retryable: false,
-      },
-      context: {
-        cause: null,
-      },
-    };
+    throw new Error(
+      "insertTask returns an empty result set. This isn't supposed to happen."
+    );
   } catch (error) {
-    if (error instanceof SQLiteError) {
-      return {
-        success: false,
-        error: {
-          code: "SQLITE_ERROR",
-          message: error.message,
-          retryable: false,
-        },
-        context: { cause: error },
-      };
-    }
-
     return {
       success: false,
       error: {
-        code: "UNEXPECTED_ERROR",
-        message: `An unexpected error occurred while trying to insert ${newTask.name} task.`,
+        code:
+          error instanceof SQLiteError
+            ? "UNEXPECTED_DATABASE_ERROR"
+            : "UNEXPECTED_ERROR",
+        message: `Something went wrong while trying to insert ${newTask.name} task.`,
         retryable: false,
       },
       context: { cause: error },
