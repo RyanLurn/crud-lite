@@ -25,7 +25,11 @@ function HomePage() {
   return (
     <div className="mx-auto flex h-full max-w-3xl flex-col gap-y-3">
       <h1 className="mt-4 text-center text-4xl font-bold">Todo list</h1>
-      <TaskList tasks={listTasksResult.data} />
+      {listTasksResult.data.length > 0 ? (
+        <TaskList tasks={listTasksResult.data} />
+      ) : (
+        <p>Your list is empty.</p>
+      )}
     </div>
   );
 }
