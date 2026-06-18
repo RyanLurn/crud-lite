@@ -10,7 +10,7 @@ interface TextFieldProps extends StrictOmit<
   ComponentProps<typeof Input>,
   "aria-invalid" | "onChange" | "onBlur" | "value" | "name" | "id"
 > {
-  label: string;
+  label?: string;
 }
 
 export function TextField({ label, ...props }: TextFieldProps) {
@@ -19,7 +19,7 @@ export function TextField({ label, ...props }: TextFieldProps) {
 
   return (
     <Field data-invalid={isInvalid}>
-      <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+      {label && <FieldLabel htmlFor={field.name}>{label}</FieldLabel>}
       <Input
         onChange={(e) => field.handleChange(e.target.value)}
         value={field.state.value}
