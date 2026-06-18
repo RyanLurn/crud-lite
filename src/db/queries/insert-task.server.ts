@@ -12,7 +12,7 @@ export async function insertTask(
 ): Promise<Result<string, UnexpectedDatabaseErrorCode | UnexpectedErrorCode>> {
   try {
     const id = Bun.randomUUIDv7();
-    await db.insert(taskTable).values({ id, name }).returning();
+    await db.insert(taskTable).values({ id, name });
     return {
       success: true,
       data: id,
