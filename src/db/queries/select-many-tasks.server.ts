@@ -9,7 +9,6 @@ import type { UnexpectedErrorCode } from "@/types/app-error";
 import type { Result } from "@/types/result";
 
 import { type SelectedTask, taskTable } from "@/db/schema/tables/task";
-import { env } from "@/config/env.server";
 import { db } from "@/db";
 
 export async function selectManyTasks(): Promise<
@@ -31,21 +30,16 @@ export async function selectManyTasks(): Promise<
     if (error instanceof SQLiteError) {
       switch (error.errno) {
         case 261: {
-          if (env.SQLITE_MODE === "WRITE-AHEAD_LOG") {
-            return {
-              success: false,
-              error: {
-                code: "SQLITE_BUSY_RECOVERY_ERROR",
-                message:
-                  "Another process is busy recovering the database file after a crash while this process is selecting tasks from the database.",
-                retryable: true,
-              },
-              context: { cause: error },
-            };
-          }
-          // This case should never happen.
-          // But if it does, we fallback to the UNEXPECTED_ERROR at the end.
-          break;
+          return {
+            success: false,
+            error: {
+              code: "SQLITE_BUSY_RECOVERY_ERROR",
+              message:
+                "Another process is busy recovering the database file after a crash while this process is selecting tasks from the database.",
+              retryable: true,
+            },
+            context: { cause: error },
+          };
         }
         case 779: {
           return {
