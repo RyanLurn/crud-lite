@@ -40,7 +40,6 @@ export const createTask = createServerFn({ method: "POST" })
         };
       }
 
-      console.log(insertTaskResult);
       return {
         success: true,
         data: insertTaskResult.data,

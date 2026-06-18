@@ -27,7 +27,6 @@ export const listTasks = createServerFn().handler(
       };
     }
 
-    console.log(selectManyTasksResult);
     return {
       success: true,
       data: selectManyTasksResult.data,
