@@ -6,8 +6,16 @@ import { toast } from "sonner";
 import type { SelectedTask } from "@/db/schema/tables/task";
 import type { StrictOmit } from "@/types/helpers";
 
+import {
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenu,
+} from "@/components/ui/context-menu";
 import { updateTaskStatus } from "@/features/task/operations/update-task-status";
 import { ItemContent, ItemMedia, ItemTitle, Item } from "@/components/ui/item";
+import { deleteTask } from "@/features/task/operations/delete-task";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/cn";
 
@@ -26,6 +34,7 @@ export function TaskItem({
 }: TaskItemProps) {
   const router = useRouter();
   const [isToggling, setIsToggling] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   async function toggleStatus() {
     setIsToggling(true);
@@ -53,36 +62,70 @@ export function TaskItem({
     setIsToggling(false);
   }
 
+  async function handleDelete() {
+    setIsDeleting(true);
+    try {
+      const result = await deleteTask({ data: { id: task.id } });
+      if (!result.success && result.error.code !== "NOT_FOUND_ERROR") {
+        toast.error(result.error.message);
+      } else {
+        await router.invalidate({ sync: true });
+      }
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error(error);
+      }
+      toast.error(`Failed to delete ${task.name} due to an unexpected error.`);
+    }
+    setIsDeleting(false);
+  }
+
   return (
-    <Item
-      className={cn(
-        isToggling
-          ? "cursor-progress text-muted-foreground"
-          : "cursor-pointer hover:bg-muted",
-        className
-      )}
-      onClick={() => void toggleStatus()}
-      variant={variant}
-      {...props}
-    >
-      <ItemMedia variant="icon">
-        {isToggling ? (
-          <Spinner />
-        ) : task.status === "done" ? (
-          <ClipboardCheck className="text-green-500" />
-        ) : (
-          <ClipboardPenLine />
-        )}
-      </ItemMedia>
-      <ItemContent>
-        <ItemTitle
+    <ContextMenu disabled={isToggling || isDeleting}>
+      <ContextMenuTrigger>
+        <Item
           className={cn(
-            task.status === "done" ? "text-muted-foreground line-through" : ""
+            isToggling || isDeleting
+              ? "cursor-progress text-muted-foreground"
+              : "cursor-pointer hover:bg-muted",
+            className
           )}
+          onClick={() => void toggleStatus()}
+          variant={variant}
+          {...props}
         >
-          {task.name}
-        </ItemTitle>
-      </ItemContent>
-    </Item>
+          <ItemMedia variant="icon">
+            {isToggling || isDeleting ? (
+              <Spinner />
+            ) : task.status === "done" ? (
+              <ClipboardCheck className="text-green-500" />
+            ) : (
+              <ClipboardPenLine />
+            )}
+          </ItemMedia>
+          <ItemContent>
+            <ItemTitle
+              className={cn(
+                task.status === "done" || isDeleting
+                  ? "text-muted-foreground line-through"
+                  : ""
+              )}
+            >
+              {task.name}
+            </ItemTitle>
+          </ItemContent>
+        </Item>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuGroup>
+          <ContextMenuItem
+            onClick={() => void handleDelete()}
+            variant="destructive"
+          >
+            Delete
+          </ContextMenuItem>
+        </ContextMenuGroup>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }
