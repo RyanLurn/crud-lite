@@ -3,12 +3,11 @@ import type { ComponentProps } from "react";
 import { ClipboardPenLine, ClipboardCheck } from "lucide-react";
 
 import type { SelectedTask } from "@/db/schema/tables/task";
-import type { StrictOmit } from "@/types/helpers";
 
 import { ItemContent, ItemMedia, ItemTitle, Item } from "@/components/ui/item";
 
 interface TaskItemProps extends ComponentProps<typeof Item> {
-  task: StrictOmit<SelectedTask, "createdAt" | "updatedAt">;
+  task: SelectedTask;
 }
 
 export function TaskItem({
