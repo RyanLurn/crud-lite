@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { NewTaskForm } from "@/features/task/components/new-task-form";
 import { listTasks } from "@/features/task/operations/list-tasks";
 import { TaskList } from "@/features/task/components/task-list";
 
@@ -23,8 +24,9 @@ function HomePage() {
   }
 
   return (
-    <div className="mx-auto flex h-full max-w-3xl flex-col gap-y-3">
-      <h1 className="mt-4 text-center text-4xl font-bold">Todo list</h1>
+    <div className="mx-auto flex h-full max-w-xl flex-col gap-y-5">
+      <h1 className="mt-5 text-center text-4xl font-bold">Todo list</h1>
+      <NewTaskForm className="w-full" />
       {listTasksResult.data.length > 0 ? (
         <TaskList tasks={listTasksResult.data} />
       ) : (
