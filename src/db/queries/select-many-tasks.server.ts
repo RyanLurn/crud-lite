@@ -3,6 +3,7 @@ import { SQLiteError } from "bun:sqlite";
 import type {
   SQLiteBusyRecoveryErrorCode,
   SQLiteCorruptIndexErrorCode,
+  SQLiteNoMemoryErrorCode,
 } from "@/db/types";
 import type { UnexpectedErrorCode } from "@/types/app-error";
 import type { Result } from "@/types/result";
@@ -16,6 +17,7 @@ export async function selectManyTasks(): Promise<
     SelectedTask[],
     | SQLiteCorruptIndexErrorCode
     | SQLiteBusyRecoveryErrorCode
+    | SQLiteNoMemoryErrorCode
     | UnexpectedErrorCode
   >
 > {
@@ -52,6 +54,18 @@ export async function selectManyTasks(): Promise<
               code: "SQLITE_CORRUPT_INDEX_ERROR",
               message:
                 "SQLite detected an entry is missing from an index while selecting tasks from the database.",
+              retryable: false,
+            },
+            context: { cause: error },
+          };
+        }
+        case 7: {
+          return {
+            success: false,
+            error: {
+              code: "SQLITE_NO_MEMORY_ERROR",
+              message:
+                "SQLite couldn't allocate all the memory it needed to select tasks.",
               retryable: false,
             },
             context: { cause: error },
