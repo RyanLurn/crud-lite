@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { listTasks } from "@/features/task/operations/list-tasks";
-import { TaskList } from "@/features/task/components/list";
+import { TaskList } from "@/features/task/components/task-list";
 
 export const Route = createFileRoute("/")({
   loader: () => listTasks(),
