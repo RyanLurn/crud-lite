@@ -1,4 +1,7 @@
-import { createTaskValidator } from "@/features/task/operations/create-task";
+import {
+  createTaskValidator,
+  taskNameValidator,
+} from "@/features/task/operations/create-task";
 import { useAppForm } from "@/lib/form/hook";
 
 export function NewTaskForm({ className }: { className?: string }) {
@@ -20,6 +23,15 @@ export function NewTaskForm({ className }: { className?: string }) {
       }}
       id={newTaskForm.formId}
       className={className}
-    ></form>
+    >
+      <newTaskForm.AppField
+        validators={{
+          onChange: taskNameValidator,
+        }}
+        name="name"
+      >
+        {(appField) => <appField.TextField placeholder="Add a new task" />}
+      </newTaskForm.AppField>
+    </form>
   );
 }

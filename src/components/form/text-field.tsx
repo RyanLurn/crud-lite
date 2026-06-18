@@ -13,7 +13,7 @@ interface TextFieldProps extends StrictOmit<
   label?: string;
 }
 
-export function TextField({ label, ...props }: TextFieldProps) {
+export function TextField({ label, type = "text", ...props }: TextFieldProps) {
   const field = useFieldContext<string>();
   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
 
@@ -27,6 +27,7 @@ export function TextField({ label, ...props }: TextFieldProps) {
         aria-invalid={isInvalid}
         name={field.name}
         id={field.name}
+        type={type}
         {...props}
       />
       {isInvalid && <FieldError errors={field.state.meta.errors} />}
