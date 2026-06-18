@@ -3,6 +3,7 @@ import {
   taskNameValidator,
 } from "@/features/task/operations/create-task";
 import { useAppForm } from "@/lib/form/hook";
+import { cn } from "@/lib/cn";
 
 export function NewTaskForm({ className }: { className?: string }) {
   const newTaskForm = useAppForm({
@@ -21,8 +22,8 @@ export function NewTaskForm({ className }: { className?: string }) {
         e.preventDefault();
         void newTaskForm.handleSubmit();
       }}
+      className={cn("flex gap-x-2", className)}
       id={newTaskForm.formId}
-      className={className}
     >
       <newTaskForm.AppField
         validators={{
