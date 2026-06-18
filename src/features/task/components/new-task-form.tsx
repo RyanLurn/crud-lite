@@ -1,4 +1,5 @@
 import { useRouter } from "@tanstack/react-router";
+import { useStore } from "@tanstack/react-form";
 import { toast } from "sonner";
 
 import {
@@ -20,7 +21,7 @@ export function NewTaskForm({ className }: { className?: string }) {
     validators: {
       onSubmit: createTaskValidator,
     },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value, formApi }) => {
       const data = createTaskValidator.parse(value);
 
       try {
@@ -29,16 +30,22 @@ export function NewTaskForm({ className }: { className?: string }) {
           toast.error(createTaskResult.error.message);
           return;
         }
-        toast.success(`The ${data.name} task has been added!`);
+        toast.success(`"${data.name}" has been added to your task list!`);
+        formApi.resetField("name");
         await router.invalidate({ sync: true });
       } catch (error) {
         if (import.meta.env.DEV) {
           console.error(error);
         }
-        toast.error(`Failed to add ${data.name} task.`);
+        toast.error(`Failed to add "${data.name}".`);
       }
     },
   });
+
+  const isSubmitting = useStore(
+    newTaskForm.store,
+    (state) => state.isSubmitting
+  );
 
   return (
     <form
@@ -55,10 +62,19 @@ export function NewTaskForm({ className }: { className?: string }) {
         }}
         name="name"
       >
-        {(appField) => <appField.TextField placeholder="Add a new task" />}
+        {(appField) => (
+          <appField.TextField
+            placeholder="Add a new task"
+            disabled={isSubmitting}
+          />
+        )}
       </newTaskForm.AppField>
       <newTaskForm.AppForm>
-        <newTaskForm.SubmitButton submittingText="Adding..." submitText="Add" />
+        <newTaskForm.SubmitButton
+          submittingText="Adding..."
+          className="w-1/5"
+          submitText="Add"
+        />
       </newTaskForm.AppForm>
     </form>
   );
