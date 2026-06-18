@@ -1,10 +1,6 @@
 import { SQLiteError } from "bun:sqlite";
 
-import type {
-  SQLiteBusyRecoveryErrorCode,
-  SQLiteCorruptIndexErrorCode,
-  SQLiteNoMemoryErrorCode,
-} from "@/db/types";
+import type { SQLiteBusyRecoveryErrorCode } from "@/db/types";
 import type { UnexpectedErrorCode } from "@/types/app-error";
 import type { Result } from "@/types/result";
 
@@ -12,13 +8,7 @@ import { type SelectedTask, taskTable } from "@/db/schema/tables/task";
 import { db } from "@/db";
 
 export async function selectManyTasks(): Promise<
-  Result<
-    SelectedTask[],
-    | SQLiteCorruptIndexErrorCode
-    | SQLiteBusyRecoveryErrorCode
-    | SQLiteNoMemoryErrorCode
-    | UnexpectedErrorCode
-  >
+  Result<SelectedTask[], SQLiteBusyRecoveryErrorCode | UnexpectedErrorCode>
 > {
   try {
     const tasks = await db.select().from(taskTable);
@@ -27,45 +17,17 @@ export async function selectManyTasks(): Promise<
       data: tasks,
     };
   } catch (error) {
-    if (error instanceof SQLiteError) {
-      switch (error.errno) {
-        case 261: {
-          return {
-            success: false,
-            error: {
-              code: "SQLITE_BUSY_RECOVERY_ERROR",
-              message:
-                "Another process is busy recovering the database file after a crash while this process is selecting tasks from the database.",
-              retryable: true,
-            },
-            context: { cause: error },
-          };
-        }
-        case 779: {
-          return {
-            success: false,
-            error: {
-              code: "SQLITE_CORRUPT_INDEX_ERROR",
-              message:
-                "SQLite detected an entry is missing from an index while selecting tasks from the database.",
-              retryable: false,
-            },
-            context: { cause: error },
-          };
-        }
-        case 7: {
-          return {
-            success: false,
-            error: {
-              code: "SQLITE_NO_MEMORY_ERROR",
-              message:
-                "SQLite couldn't allocate all the memory it needed to select tasks.",
-              retryable: false,
-            },
-            context: { cause: error },
-          };
-        }
-      }
+    if (error instanceof SQLiteError && error.errno === 261) {
+      return {
+        success: false,
+        error: {
+          code: "SQLITE_BUSY_RECOVERY_ERROR",
+          message:
+            "Another process is busy recovering the database file after a crash while this process is selecting tasks from the database.",
+          retryable: true,
+        },
+        context: { cause: error },
+      };
     }
     return {
       success: false,
