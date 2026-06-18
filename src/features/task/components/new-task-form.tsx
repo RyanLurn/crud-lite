@@ -1,3 +1,4 @@
+import { useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import {
@@ -9,6 +10,8 @@ import { useAppForm } from "@/lib/form/hook";
 import { cn } from "@/lib/cn";
 
 export function NewTaskForm({ className }: { className?: string }) {
+  const router = useRouter();
+
   const newTaskForm = useAppForm({
     formId: "new-task-form",
     defaultValues: {
@@ -27,6 +30,7 @@ export function NewTaskForm({ className }: { className?: string }) {
           return;
         }
         toast.success(`The ${data.name} task has been added!`);
+        await router.invalidate({ sync: true });
       } catch (error) {
         if (import.meta.env.DEV) {
           console.error(error);
