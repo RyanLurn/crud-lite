@@ -3,20 +3,31 @@ import { createServerFn } from "@tanstack/react-start";
 
 import type { SerializableResult } from "@/types/serializable-result";
 import type { InternalServerErrorCode } from "@/types/app-error";
-import type { SelectedTask } from "@/db/schema/tables/task";
 
-import { selectManyTasks } from "@/db/queries/select-many-tasks.server";
+import { type SelectedTask, taskTable } from "@/db/schema/tables/task";
+import { HTTP_STATUS } from "@/utils/http-status";
+import { db } from "@/db";
 
 export const listTasks = createServerFn().handler(
   async (): Promise<
     SerializableResult<SelectedTask[], InternalServerErrorCode>
   > => {
-    const selectManyTasksResult = await selectManyTasks();
+    try {
+      const tasks = await db.select().from(taskTable);
+      return {
+        success: true,
+        data: tasks,
+      };
+    } catch (error) {
+      console.error(
+        `Something went wrong while trying to select tasks from the database:`
+      );
+      console.error(error);
 
-    if (!selectManyTasksResult.success) {
-      console.error(selectManyTasksResult);
-
-      setResponseStatus(500);
+      setResponseStatus(
+        HTTP_STATUS.INTERNAL_SERVER_ERROR.code,
+        HTTP_STATUS.INTERNAL_SERVER_ERROR.text
+      );
       return {
         success: false,
         error: {
@@ -26,10 +37,5 @@ export const listTasks = createServerFn().handler(
         },
       };
     }
-
-    return {
-      success: true,
-      data: selectManyTasksResult.data,
-    };
   }
 );
