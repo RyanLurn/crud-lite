@@ -56,6 +56,7 @@ export const deleteTask = createServerFn({ method: "POST" })
           HTTP_STATUS.INTERNAL_SERVER_ERROR.code,
           HTTP_STATUS.INTERNAL_SERVER_ERROR.text
         );
+
         return {
           success: false,
           error: {
