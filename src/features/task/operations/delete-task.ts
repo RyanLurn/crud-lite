@@ -10,6 +10,7 @@ import type {
 import type { SerializableResult } from "@/types/serializable-result";
 
 import { taskTable } from "@/db/schema/tables/task";
+import { HTTP_STATUS } from "@/utils/http-status";
 import { db } from "@/db";
 
 export const deleteTask = createServerFn({ method: "POST" })
@@ -33,7 +34,10 @@ export const deleteTask = createServerFn({ method: "POST" })
           };
         }
 
-        setResponseStatus(404);
+        setResponseStatus(
+          HTTP_STATUS.NOT_FOUND.code,
+          HTTP_STATUS.NOT_FOUND.text
+        );
         return {
           success: false,
           error: {
@@ -46,7 +50,10 @@ export const deleteTask = createServerFn({ method: "POST" })
         console.error(`Failed to delete task with id: ${data.id}.`);
         console.error(error);
 
-        setResponseStatus(500);
+        setResponseStatus(
+          HTTP_STATUS.INTERNAL_SERVER_ERROR.code,
+          HTTP_STATUS.INTERNAL_SERVER_ERROR.text
+        );
         return {
           success: false,
           error: {
