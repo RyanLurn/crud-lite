@@ -21,7 +21,7 @@ export const listTasks = createServerFn().handler(
         data: tasks,
       };
 
-      logger.debug(
+      logger.trace(
         successResult,
         `Selected ${tasks.length} task(s) from the database.`
       );
