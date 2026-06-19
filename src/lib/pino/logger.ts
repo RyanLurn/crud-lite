@@ -1,7 +1,14 @@
-import { pino } from "pino";
+import { type LoggerOptions, pino } from "pino";
 
-export const logger = pino({
-  transport: {
-    target: "pino-pretty",
-  },
-});
+import { env } from "@/config/env.server";
+
+const loggerOptions: LoggerOptions =
+  env.NODE_ENV === "development"
+    ? {
+        transport: {
+          target: "pino-pretty",
+        },
+      }
+    : {};
+
+export const logger = pino(loggerOptions);
