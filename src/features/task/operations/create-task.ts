@@ -5,6 +5,7 @@ import { z } from "zod";
 import type { SerializableResult } from "@/types/serializable-result";
 import type { InternalServerErrorCode } from "@/types/app-error";
 
+import { formatErrorMessage } from "@/utils/format-error-message";
 import { taskTable } from "@/db/schema/tables/task";
 import { HTTP_STATUS } from "@/utils/http-status";
 import { db } from "@/db";
@@ -24,9 +25,10 @@ export const createTask = createServerFn({ method: "POST" })
     async ({
       data,
     }): Promise<SerializableResult<string, InternalServerErrorCode>> => {
+      const { name } = data;
       try {
         const id = Bun.randomUUIDv7();
-        await db.insert(taskTable).values({ id, name: data.name });
+        await db.insert(taskTable).values({ id, name });
 
         setResponseStatus(HTTP_STATUS.CREATED.code, HTTP_STATUS.CREATED.text);
         return {
@@ -34,20 +36,24 @@ export const createTask = createServerFn({ method: "POST" })
           data: id,
         };
       } catch (error) {
-        console.error(
-          `Something went wrong while trying to create ${data.name} task:`
-        );
+        const message = formatErrorMessage({
+          action: "add task",
+          reason: "an unexpected error",
+        });
+
+        console.error(message);
         console.error(error);
 
         setResponseStatus(
           HTTP_STATUS.INTERNAL_SERVER_ERROR.code,
           HTTP_STATUS.INTERNAL_SERVER_ERROR.text
         );
+
         return {
           success: false,
           error: {
             code: "INTERNAL_SERVER_ERROR",
-            message: `Something went wrong while trying to create ${data.name} task.`,
+            message,
             retryable: false,
           },
         };

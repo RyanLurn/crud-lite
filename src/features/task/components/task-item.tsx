@@ -16,6 +16,7 @@ import {
 import { updateTaskStatus } from "@/features/task/operations/update-task-status";
 import { ItemContent, ItemMedia, ItemTitle, Item } from "@/components/ui/item";
 import { deleteTask } from "@/features/task/operations/delete-task";
+import { formatErrorMessage } from "@/utils/format-error-message";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/cn";
 
@@ -64,7 +65,10 @@ export function TaskItem({
         console.error(error);
       }
       toast.error(
-        `Something went wrong while trying to mark ${task.name} as ${newStatus}.`
+        formatErrorMessage({
+          action: `mark task as ${newStatus}`,
+          reason: "an unexpected error",
+        })
       );
     }
     setIsToggling(false);
@@ -83,7 +87,12 @@ export function TaskItem({
       if (import.meta.env.DEV) {
         console.error(error);
       }
-      toast.error(`Failed to delete ${task.name} due to an unexpected error.`);
+      toast.error(
+        formatErrorMessage({
+          action: "delete task",
+          reason: "an unexpected error",
+        })
+      );
     }
     setIsDeleting(false);
   }

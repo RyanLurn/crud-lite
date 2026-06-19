@@ -5,6 +5,7 @@ import type { SerializableResult } from "@/types/serializable-result";
 import type { InternalServerErrorCode } from "@/types/app-error";
 
 import { type SelectedTask, taskTable } from "@/db/schema/tables/task";
+import { formatErrorMessage } from "@/utils/format-error-message";
 import { HTTP_STATUS } from "@/utils/http-status";
 import { db } from "@/db";
 
@@ -19,20 +20,24 @@ export const listTasks = createServerFn().handler(
         data: tasks,
       };
     } catch (error) {
-      console.error(
-        `Something went wrong while trying to select tasks from the database:`
-      );
+      const message = formatErrorMessage({
+        action: "select tasks",
+        reason: "an unexpected error",
+      });
+
+      console.error(message);
       console.error(error);
 
       setResponseStatus(
         HTTP_STATUS.INTERNAL_SERVER_ERROR.code,
         HTTP_STATUS.INTERNAL_SERVER_ERROR.text
       );
+
       return {
         success: false,
         error: {
           code: "INTERNAL_SERVER_ERROR",
-          message: "Something went wrong while trying to list tasks.",
+          message,
           retryable: false,
         },
       };

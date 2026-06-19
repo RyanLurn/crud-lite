@@ -6,6 +6,7 @@ import {
   createTaskValidator,
   createTask,
 } from "@/features/task/operations/create-task";
+import { formatErrorMessage } from "@/utils/format-error-message";
 import { useAppForm } from "@/lib/form/hook";
 import { cn } from "@/lib/cn";
 
@@ -36,7 +37,12 @@ export function NewTaskForm({ className }: { className?: string }) {
         if (import.meta.env.DEV) {
           console.error(error);
         }
-        toast.error(`Failed to add "${data.name}".`);
+        toast.error(
+          formatErrorMessage({
+            action: "add task",
+            reason: "an unexpected error",
+          })
+        );
       }
     },
   });

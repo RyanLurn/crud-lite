@@ -9,6 +9,7 @@ import type {
 } from "@/types/app-error";
 import type { SerializableResult } from "@/types/serializable-result";
 
+import { formatErrorMessage } from "@/utils/format-error-message";
 import { taskTable } from "@/db/schema/tables/task";
 import { HTTP_STATUS } from "@/utils/http-status";
 import { db } from "@/db";
@@ -21,10 +22,11 @@ export const deleteTask = createServerFn({ method: "POST" })
     }): Promise<
       SerializableResult<null, InternalServerErrorCode | NotFoundErrorCode>
     > => {
+      const { id } = data;
       try {
         const [deletedTask] = await db
           .delete(taskTable)
-          .where(eq(taskTable.id, data.id))
+          .where(eq(taskTable.id, id))
           .returning();
 
         if (deletedTask) {
@@ -47,7 +49,12 @@ export const deleteTask = createServerFn({ method: "POST" })
           },
         };
       } catch (error) {
-        console.error(`Failed to delete task with id: ${data.id}.`);
+        const message = formatErrorMessage({
+          action: "delete task",
+          reason: "an unexpected error",
+        });
+
+        console.error(message);
         console.error(error);
 
         setResponseStatus(
@@ -58,7 +65,7 @@ export const deleteTask = createServerFn({ method: "POST" })
           success: false,
           error: {
             code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to delete task due to an unexpected error.",
+            message,
             retryable: false,
           },
         };

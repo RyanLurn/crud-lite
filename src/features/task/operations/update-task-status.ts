@@ -10,6 +10,7 @@ import type {
 import type { SerializableResult } from "@/types/serializable-result";
 
 import { TASK_STATUS_ENUM, taskTable } from "@/db/schema/tables/task";
+import { formatErrorMessage } from "@/utils/format-error-message";
 import { HTTP_STATUS } from "@/utils/http-status";
 import { db } from "@/db";
 
@@ -49,20 +50,24 @@ export const updateTaskStatus = createServerFn({ method: "POST" })
           },
         };
       } catch (error) {
-        console.error(
-          `Failed to update task with id: ${id} to status: ${status}.`
-        );
+        const message = formatErrorMessage({
+          action: `mark task as ${status}`,
+          reason: "an unexpected error",
+        });
+
+        console.error(message);
         console.error(error);
 
         setResponseStatus(
           HTTP_STATUS.INTERNAL_SERVER_ERROR.code,
           HTTP_STATUS.INTERNAL_SERVER_ERROR.text
         );
+
         return {
           success: false,
           error: {
             code: "INTERNAL_SERVER_ERROR",
-            message: `Something went wrong while trying to mark task as ${data.status}.`,
+            message,
             retryable: false,
           },
         };
