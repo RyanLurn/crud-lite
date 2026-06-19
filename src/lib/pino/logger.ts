@@ -8,7 +8,8 @@ const loggerOptions: LoggerOptions =
         transport: {
           target: "pino-pretty",
         },
+        level: env.LOG_LEVEL,
       }
-    : {};
+    : { level: env.LOG_LEVEL };
 
 export const logger = pino(loggerOptions);
