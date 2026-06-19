@@ -1,8 +1,8 @@
 import { setResponseStatus } from "@tanstack/react-start/server";
 import { createServerFn } from "@tanstack/react-start";
 
-import type { SerializableResult } from "@/types/serializable-result";
 import type { InternalServerErrorCode } from "@/types/app-error";
+import type { Result } from "@/types/result";
 
 import { type SelectedTask, taskTable } from "@/db/schema/tables/task";
 import { formatErrorMessage } from "@/utils/format-error-message";
@@ -10,9 +10,7 @@ import { HTTP_STATUS } from "@/utils/http-status";
 import { db } from "@/db";
 
 export const listTasks = createServerFn().handler(
-  async (): Promise<
-    SerializableResult<SelectedTask[], InternalServerErrorCode>
-  > => {
+  async (): Promise<Result<SelectedTask[], InternalServerErrorCode>> => {
     try {
       const tasks = await db.select().from(taskTable);
       return {

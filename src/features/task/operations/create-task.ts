@@ -2,8 +2,8 @@ import { setResponseStatus } from "@tanstack/react-start/server";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import type { SerializableResult } from "@/types/serializable-result";
 import type { InternalServerErrorCode } from "@/types/app-error";
+import type { Result } from "@/types/result";
 
 import { formatErrorMessage } from "@/utils/format-error-message";
 import { taskTable } from "@/db/schema/tables/task";
@@ -22,9 +22,7 @@ export const createTaskValidator = z.object({
 export const createTask = createServerFn({ method: "POST" })
   .validator(createTaskValidator)
   .handler(
-    async ({
-      data,
-    }): Promise<SerializableResult<string, InternalServerErrorCode>> => {
+    async ({ data }): Promise<Result<string, InternalServerErrorCode>> => {
       const { name } = data;
       try {
         const id = Bun.randomUUIDv7();

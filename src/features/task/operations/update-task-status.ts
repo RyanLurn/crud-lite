@@ -7,7 +7,7 @@ import type {
   InternalServerErrorCode,
   NotFoundErrorCode,
 } from "@/types/app-error";
-import type { SerializableResult } from "@/types/serializable-result";
+import type { Result } from "@/types/result";
 
 import { TASK_STATUS_ENUM, taskTable } from "@/db/schema/tables/task";
 import { formatErrorMessage } from "@/utils/format-error-message";
@@ -19,9 +19,7 @@ export const updateTaskStatus = createServerFn({ method: "POST" })
   .handler(
     async ({
       data,
-    }): Promise<
-      SerializableResult<null, InternalServerErrorCode | NotFoundErrorCode>
-    > => {
+    }): Promise<Result<null, InternalServerErrorCode | NotFoundErrorCode>> => {
       const { id, status } = data;
       try {
         const [updatedTask] = await db

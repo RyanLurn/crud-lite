@@ -1,6 +1,17 @@
+import type { JsonValue } from "@/types/json-value";
 import type { AppError } from "@/types/app-error";
 
-export type SuccessResult<TData> = {
+// These are the data types that TanStack Router can serialize
+export type SerializableData =
+  | { [key: string]: SerializableData }
+  | SerializableData[]
+  | JsonValue
+  | undefined
+  | FormData
+  | Error
+  | Date;
+
+export type SuccessResult<TData extends SerializableData> = {
   success: true;
   data: TData;
 };
@@ -8,11 +19,8 @@ export type SuccessResult<TData> = {
 export type ErrorResult<TCode extends string> = {
   success: false;
   error: AppError<TCode>;
-  context: {
-    cause: unknown;
-  };
 };
 
-export type Result<TData, TErrorCode extends string> =
+export type Result<TData extends SerializableData, TErrorCode extends string> =
   | ErrorResult<TErrorCode>
   | SuccessResult<TData>;

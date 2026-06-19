@@ -7,7 +7,7 @@ import type {
   InternalServerErrorCode,
   NotFoundErrorCode,
 } from "@/types/app-error";
-import type { SerializableResult } from "@/types/serializable-result";
+import type { Result } from "@/types/result";
 
 import { formatErrorMessage } from "@/utils/format-error-message";
 import { taskTable } from "@/db/schema/tables/task";
@@ -19,9 +19,7 @@ export const deleteTask = createServerFn({ method: "POST" })
   .handler(
     async ({
       data,
-    }): Promise<
-      SerializableResult<null, InternalServerErrorCode | NotFoundErrorCode>
-    > => {
+    }): Promise<Result<null, InternalServerErrorCode | NotFoundErrorCode>> => {
       const { id } = data;
       try {
         const [deletedTask] = await db
