@@ -36,6 +36,7 @@ export const updateTaskStatus = createServerFn({ method: "POST" })
           HTTP_STATUS.NOT_FOUND.code,
           HTTP_STATUS.NOT_FOUND.text
         );
+
         return {
           success: false,
           error: {

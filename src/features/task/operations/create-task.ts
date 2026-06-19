@@ -28,6 +28,7 @@ export const createTask = createServerFn({ method: "POST" })
       await db.insert(taskTable).values({ id, name });
 
       setResponseStatus(HTTP_STATUS.CREATED.code, HTTP_STATUS.CREATED.text);
+
       return {
         success: true,
         data: id,
