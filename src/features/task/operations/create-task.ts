@@ -2,7 +2,7 @@ import { setResponseStatus } from "@tanstack/react-start/server";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import type { InternalServerErrorCode } from "@/types/app-error";
+import type { FallbackErrorCode } from "@/types/app-error";
 import type { Result } from "@/types/result";
 
 import { formatErrorMessage } from "@/utils/format-error-message";
@@ -21,40 +21,38 @@ export const createTaskValidator = z.object({
 
 export const createTask = createServerFn({ method: "POST" })
   .validator(createTaskValidator)
-  .handler(
-    async ({ data }): Promise<Result<string, InternalServerErrorCode>> => {
-      const { name } = data;
-      try {
-        const id = Bun.randomUUIDv7();
-        await db.insert(taskTable).values({ id, name });
+  .handler(async ({ data }): Promise<Result<string, FallbackErrorCode>> => {
+    const { name } = data;
+    try {
+      const id = Bun.randomUUIDv7();
+      await db.insert(taskTable).values({ id, name });
 
-        setResponseStatus(HTTP_STATUS.CREATED.code, HTTP_STATUS.CREATED.text);
-        return {
-          success: true,
-          data: id,
-        };
-      } catch (error) {
-        const message = formatErrorMessage({
-          action: "add task",
-          reason: "an unexpected error",
-        });
+      setResponseStatus(HTTP_STATUS.CREATED.code, HTTP_STATUS.CREATED.text);
+      return {
+        success: true,
+        data: id,
+      };
+    } catch (error) {
+      const message = formatErrorMessage({
+        action: "add task",
+        reason: "an unexpected error",
+      });
 
-        console.error(message);
-        console.error(error);
+      console.error(message);
+      console.error(error);
 
-        setResponseStatus(
-          HTTP_STATUS.INTERNAL_SERVER_ERROR.code,
-          HTTP_STATUS.INTERNAL_SERVER_ERROR.text
-        );
+      setResponseStatus(
+        HTTP_STATUS.INTERNAL_SERVER_ERROR.code,
+        HTTP_STATUS.INTERNAL_SERVER_ERROR.text
+      );
 
-        return {
-          success: false,
-          error: {
-            code: "INTERNAL_SERVER_ERROR",
-            message,
-            retryable: false,
-          },
-        };
-      }
+      return {
+        success: false,
+        error: {
+          code: "FALLBACK_ERROR",
+          message,
+          retryable: false,
+        },
+      };
     }
-  );
+  });

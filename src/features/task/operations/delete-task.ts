@@ -3,10 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
-import type {
-  InternalServerErrorCode,
-  NotFoundErrorCode,
-} from "@/types/app-error";
+import type { FallbackErrorCode, NotFoundErrorCode } from "@/types/app-error";
 import type { Result } from "@/types/result";
 
 import { formatErrorMessage } from "@/utils/format-error-message";
@@ -19,7 +16,7 @@ export const deleteTask = createServerFn({ method: "POST" })
   .handler(
     async ({
       data,
-    }): Promise<Result<null, InternalServerErrorCode | NotFoundErrorCode>> => {
+    }): Promise<Result<null, FallbackErrorCode | NotFoundErrorCode>> => {
       const { id } = data;
       try {
         const [deletedTask] = await db
@@ -62,7 +59,7 @@ export const deleteTask = createServerFn({ method: "POST" })
         return {
           success: false,
           error: {
-            code: "INTERNAL_SERVER_ERROR",
+            code: "FALLBACK_ERROR",
             message,
             retryable: false,
           },
