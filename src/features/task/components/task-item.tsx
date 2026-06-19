@@ -47,7 +47,15 @@ export function TaskItem({
         },
       });
       if (!result.success) {
-        toast.error(result.error.message);
+        const error = result.error;
+        if (error.code === "NOT_FOUND_ERROR") {
+          toast.error(
+            `The task: ${task.name} doesn't exist on the server. Reloading data...`
+          );
+          await router.invalidate({ sync: true });
+        } else {
+          toast.error(error.message);
+        }
       } else {
         await router.invalidate({ sync: true });
       }
